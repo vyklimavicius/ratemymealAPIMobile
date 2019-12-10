@@ -17,6 +17,8 @@ class Api::V1::UsersController < ApplicationController
   # POST /users
   def create
     @user = User.new(user_params)
+    
+    @user.avatar.attach(io: avatar_io, filename: avatar_name)
 
     if @user.save
       render json: @user, status: :created
@@ -49,5 +51,14 @@ class Api::V1::UsersController < ApplicationController
     # Only allow a trusted parameter "white list" through.
     def user_params
       params.require(:user).permit(:name, :lastname, :password, :email)
+    end
+
+    def avatar_io
+    decoded_image = Base64.decode64(params[:user][:avatar])
+     StringIO.new(decoded_image)
+    end
+  
+    def avatar_name
+    params[:user][:avatar_name]
     end
 end
