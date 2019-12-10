@@ -4,7 +4,7 @@ class Api::V1::UsersController < ApplicationController
 
   # GET /users
   def index
-    @users = User.all
+    @users = User.all.with_attached_avatar
 
     render json: @users
   end
@@ -17,7 +17,6 @@ class Api::V1::UsersController < ApplicationController
   # POST /users
   def create
     @user = User.new(user_params)
-    
     @user.avatar.attach(io: avatar_io, filename: avatar_name)
 
     if @user.save
@@ -26,7 +25,7 @@ class Api::V1::UsersController < ApplicationController
       render json: @user.errors, status: :unprocessable_entity
     end
   end
-
+  
   # PATCH/PUT /users/1
   def update
     if @user.update(user_params)
@@ -50,7 +49,7 @@ class Api::V1::UsersController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def user_params
-      params.require(:user).permit(:name, :lastname, :password, :email)
+      params.require(:user).permit(:name, :lastname, :password, :email, :avatar)
     end
 
     def avatar_io
