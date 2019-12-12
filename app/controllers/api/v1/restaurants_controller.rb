@@ -3,7 +3,7 @@ class Api::V1::RestaurantsController < ApplicationController
 
   # GET /restaurants
   def index
-    @restaurants = Restaurant.all
+    @restaurants = Restaurant.all.with_attached_avatar
 
     render json: @restaurants
   end
@@ -16,6 +16,7 @@ class Api::V1::RestaurantsController < ApplicationController
   # POST /restaurants
   def create
     @restaurant = Restaurant.new(restaurant_params)
+    @restaurant.image.attach(io: image_io, filename: image_name)
 
     if @restaurant.save
       render json: @restaurant, status: :created
@@ -47,5 +48,14 @@ class Api::V1::RestaurantsController < ApplicationController
     # Only allow a trusted parameter "white list" through.
     def restaurant_params
       params.require(:restaurant).permit(:name, :specialty, :rating, :image)
+    end
+
+    def image_io
+    decoded_image = Base64.decode64(params[:restaurant][:image])
+     StringIO.new(decoded_image)
+    end
+  
+    def image_name
+    params[:restaurant][:image_name]
     end
 end
