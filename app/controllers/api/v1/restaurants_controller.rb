@@ -3,7 +3,7 @@ class Api::V1::RestaurantsController < ApplicationController
 
   # GET /restaurants
   def index
-    @restaurants = Restaurant.all.with_attached_avatar
+    @restaurants = Restaurant.all.with_attached_image
 
     render json: @restaurants
   end
